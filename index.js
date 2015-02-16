@@ -15,12 +15,12 @@ exports.register = function(server, options, next) {
     var expression = new RegExp(/(?:http[s]*\:\/\/)*(.*?)\.(?=[^\/]*\..{2,5})/i);
 
     var subdomain = expression.exec(request.info.hostname);
-    
+
     if (subdomain) subdomain = subdomain[1];
 
     if (subdomain && !Hoek.contain(options.exclude, subdomain)) {
-
-      request.setUrl(options.destination + request.path + subdomain);
+      console.log(options.destination + '/' + subdomain + request.url.path)
+      request.setUrl(options.destination + '/' + subdomain + request.url.path);
 
     }
 
