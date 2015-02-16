@@ -108,7 +108,6 @@ lab.experiment('Subdomain plugin', function () {
     }], Hoek.ignore);
 
     server.inject('http://acme.example.com', function(res) {
-      console.log(res)
       expect(res.statusCode).to.equal(200);
       expect(res.result).to.contain('acme');
       done();

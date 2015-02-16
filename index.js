@@ -19,7 +19,7 @@ exports.register = function(server, options, next) {
     if (subdomain) subdomain = subdomain[1];
 
     if (subdomain && !Hoek.contain(options.exclude, subdomain)) {
-      console.log(options.destination + '/' + subdomain + request.url.path)
+
       request.setUrl(options.destination + '/' + subdomain + request.url.path);
 
     }
