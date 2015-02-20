@@ -148,7 +148,37 @@ lab.experiment('Subdomain plugin', function () {
 
   })
 
-  lab.test('post works as well')
+  lab.test('POST', function(done) {
+
+    var server = new Hapi.Server({ minimal: true});
+
+    server.connection({host: 'example.com'});
+
+    server.route({
+      method: 'POST',
+      path: '/tenant/{tenant}/',
+      handler: function(request, reply) {
+
+        reply(request.payload.foo);
+
+      }
+    })
+
+    server.register([{
+      register: subdomain,
+      options: {
+        exclude: ['www'],
+        destination: '/tenant'
+      }
+    }], Hoek.ignore);
+
+    server.inject({ url: 'http://acme.example.com/', method: 'POST', payload:'{"foo": "bar"}' }, function(res) {
+      expect(res.statusCode).to.equal(200);
+      expect(res.result).to.equal('bar');
+      done();
+    })
+
+  })
 
 
 

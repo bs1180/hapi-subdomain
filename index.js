@@ -1,5 +1,15 @@
 var Hoek = require('hoek');
 
+/*
+TODO: Better readme
+POST method
+headers? other complex bits?
+lint?
+republish to npm
+ask for guidance
+
+*/
+
 exports.register = function(server, options, next) {
 
   Hoek.assert(options.destination, 'Must provide a destination');
