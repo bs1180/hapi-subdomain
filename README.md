@@ -4,7 +4,7 @@ This is a simple plugin for using subdomains with Hapi.js, as is typical in mult
 
 Once the plugin is installed, it gets added to your:
 
-'''
+```
 server.register([{
   register: require('hapi-subdomain'),
   options: {
@@ -14,10 +14,10 @@ server.register([{
   }], function(err) {
     if (err) console.log(err)
     });
-'''
+```
 
-<pre>exclude</pre> is an array of subdomains to ignore.
-<pre>destination</pre> is the path to prepend the subdomain to.
+`exclude` is an array of subdomains to ignore.
+`destination` is the path to prepend the subdomain to.
 
 Only the first subdomain is detected by the regex, and any route with no subdomain (http://example.com) is ignored.
 
