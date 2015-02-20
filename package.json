@@ -7,13 +7,31 @@
     "test": "lab -c"
   },
   "author": "Ben Smith",
-  "license": "ISC",
+  "license": "GPL",
   "dependencies": {
-    "boom": "^2.6.1",
-    "code": "^1.3.0",
     "hapi": "^8.2.0",
     "hoek": "^2.11.0",
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "boom": "^2.6.1",
+    "code": "^1.3.0",
     "joi": "^5.1.0",
     "lab": "^5.2.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bs1180/hapi-subdomain.git"
+  },
+  "keywords": [
+    "hapi",
+    "js",
+    "subdomains"
+  ],
+  "bugs": {
+    "url": "https://github.com/bs1180/hapi-subdomain/issues"
+  },
+  "homepage": "https://github.com/bs1180/hapi-subdomain"
 }
