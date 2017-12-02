@@ -10,177 +10,154 @@ var expect = Code.expect;
 
 lab.experiment('Subdomain plugin', function () {
 
-  lab.test('should load correctly', function(done) {
+  lab.test('should load correctly', async () => {
 
-    var server = new Hapi.Server({ minimal: true});
+    const server = Hapi.Server({ });
 
-    server.register([{
-      register: subdomain,
+    await server.register([{
+      plugin: subdomain,
       options: {
         destination: 'tenant'
       }
-    }], function (err) {
-      expect(err).to.not.exist();
-      done()
+    }]);
+  })
 
+  lab.test('should do nothing if no subdomain', async () => {
+
+    const server = Hapi.Server({ host: 'example.com' });
+
+    server.route({
+      method: 'GET',
+      path: '/',
+      handler: async (request) => {
+        return 'ok'
+      }
+    })
+
+    await server.register({
+      plugin: subdomain,
+      options: {
+        exclude: ['www', 'api'],
+        destination: '/tenant'
+      }
     });
 
+    const res = await server.inject('http://example.com/');
+    expect(res.statusCode).to.equal(200);
+
   })
 
-  lab.test('should do nothing if no subdomain', function(done) {
+  lab.test('should ignore whitelist', async () => {
 
-    var server = new Hapi.Server({ minimal: true});
-
-    server.connection({host: 'example.com'});
+    const server = Hapi.Server({ host: 'example.com' });
 
     server.route({
       method: 'GET',
       path: '/',
-      handler: function(request, reply) {
-        reply('ok');
+      handler: function(request) {
+        return 'ok';
       }
     })
 
-    server.register([{
-      register: subdomain,
+    await server.register([{
+      plugin: subdomain,
       options: {
         exclude: ['www', 'api'],
         destination: '/tenant'
       }
-    }], Hoek.ignore);
+    }]);
 
-    server.inject('http://example.com/', function(res) {
-      expect(res.statusCode).to.equal(200);
-      done();
-    })
+    const res = await server.inject('http://api.example.com/');
+    expect(res.statusCode).to.equal(200);
 
   })
 
-  lab.test('should ignore whitelist', function(done) {
+  lab.test('should route to destination', async () => {
 
-    var server = new Hapi.Server({ minimal: true});
+    const server = Hapi.Server({ host: 'example.com' });
 
-    server.connection({host: 'example.com'});
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function(request, reply) {
-        reply('ok');
-      }
-    })
-
-    server.register([{
-      register: subdomain,
-      options: {
-        exclude: ['www', 'api'],
-        destination: '/tenant'
-      }
-    }], Hoek.ignore);
-
-    server.inject('http://api.example.com/', function(res) {
-      expect(res.statusCode).to.equal(200);
-      done();
-    })
-
-  })
-
-  lab.test('should route to destination', function(done) {
-
-    var server = new Hapi.Server({ minimal: true});
-
-    server.connection({host: 'example.com'});
-
-    server.route({
-      method: 'GET',
-      path: '/tenant/{tenant}/',
-      handler: function(request, reply) {
-        reply(request.params.tenant);
-      }
-    })
-
-    server.register([{
-      register: subdomain,
+    await server.register([{
+      plugin: subdomain,
       options: {
         exclude: ['www'],
         destination: '/tenant'
       }
-    }], Hoek.ignore);
+    }]);
 
-    server.inject('http://acme.example.com', function(res) {
-      expect(res.statusCode).to.equal(200);
-      expect(res.result).to.contain('acme');
-      done();
+    server.route({
+      method: 'GET',
+      path: '/tenant/{tenant}/',
+      handler: async (request) => {
+        return request.params.tenant;
+      }
     })
+
+
+    const res = await server.inject('http://acme.example.com');
+    expect(res.statusCode).to.equal(200);
+    expect(res.result).to.contain('acme');
 
   })
 
-  lab.test('should route even complex paths', function(done) {
+  lab.test('should route even complex paths', async () => {
 
-    var server = new Hapi.Server({ minimal: true});
-
-    server.connection({host: 'example.com'});
+    const server = Hapi.Server({ host: 'example.com' });
 
     server.route({
       method: 'GET',
       path: '/tenant/{tenant}/example',
-      handler: function(request, reply) {
+      handler: async (request) => {
 
-        reply({tenant: request.params.tenant, query: request.query.foo});
+        return {tenant: request.params.tenant, query: request.query.foo};
 
       }
     })
 
-    server.register([{
-      register: subdomain,
+    await server.register([{
+      plugin: subdomain,
       options: {
         exclude: ['www'],
         destination: '/tenant'
       }
-    }], Hoek.ignore);
+    }]);
 
-    server.inject('http://acme.example.com/example?foo=bar', function(res) {
-      expect(res.statusCode).to.equal(200);
-      expect(res.result.tenant).to.contain('acme');
-      expect(res.result.query).to.contain('bar')
-      done();
-    })
+    const res = await server.inject('http://acme.example.com/example?foo=bar');
+    expect(res.statusCode).to.equal(200);
+    expect(res.result.tenant).to.contain('acme');
+    expect(res.result.query).to.contain('bar')
 
   })
 
-  lab.test('POST', function(done) {
+  lab.test('POST', async () => {
 
-    var server = new Hapi.Server({ minimal: true});
-
-    server.connection({host: 'example.com'});
+    const server = Hapi.Server({ host: 'example.com' });
 
     server.route({
       method: 'POST',
       path: '/tenant/{tenant}/',
-      handler: function(request, reply) {
+      handler: async (request) => {
 
-        reply(request.payload.foo);
+        return request.payload.foo;
 
       }
     })
 
-    server.register([{
-      register: subdomain,
+    await server.register([{
+      plugin: subdomain,
       options: {
         exclude: ['www'],
         destination: '/tenant'
       }
-    }], Hoek.ignore);
+    }]);
 
-    server.inject({ url: 'http://acme.example.com/', method: 'POST', payload:'{"foo": "bar"}' }, function(res) {
-      expect(res.statusCode).to.equal(200);
-      expect(res.result).to.equal('bar');
-      done();
-    })
+    const res = await server.inject({ 
+      url: 'http://acme.example.com/',
+      method: 'POST',
+      payload:'{"foo": "bar"}'
+    });
+    expect(res.statusCode).to.equal(200);
+    expect(res.result).to.equal('bar');
 
   })
-
-
-
 
 });

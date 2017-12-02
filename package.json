@@ -1,6 +1,6 @@
 {
   "name": "hapi-subdomain",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Simple subdomain routing tool for Hapi.js",
   "main": "index.js",
   "scripts": {
@@ -9,17 +9,17 @@
   "author": "Ben Smith",
   "license": "GPL",
   "dependencies": {
-    "hapi": "^8.2.0",
-    "hoek": "^2.11.0",
+    "hapi": "^17.1.1",
+    "hoek": "^5.0.2"
   },
   "directories": {
     "test": "test"
   },
   "devDependencies": {
-    "boom": "^2.6.1",
-    "code": "^1.3.0",
-    "joi": "^5.1.0",
-    "lab": "^5.2.1"
+    "boom": "^7.1.1",
+    "code": "^5.1.2",
+    "joi": "^13.0.2",
+    "lab": "^15.1.2"
   },
   "repository": {
     "type": "git",
