@@ -7,6 +7,9 @@
     "test": "lab -c"
   },
   "author": "Ben Smith",
+  "contributors": [
+    "Arsalan Ahmad <contact@arsalan.me>"
+  ],
   "license": "GPL",
   "dependencies": {
     "hapi": "^17.1.1",
