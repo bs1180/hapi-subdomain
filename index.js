@@ -1,6 +1,6 @@
-var Hoek = require('hoek');
+const Hoek = require('hoek');
 
-exports.register = function(server, options, next) {
+async function register (server, options) {
 
   Hoek.assert(options.destination, 'Must provide a destination');
 
@@ -10,29 +10,29 @@ exports.register = function(server, options, next) {
 
   }
 
-  server.ext('onRequest', function(request, reply) {
+  server.ext('onRequest', async (request, h) => {
 
-    var expression = new RegExp(/(?:http[s]*\:\/\/)*(.*?)\.(?=[^\/]*\..{2,5})/i);
+    const expression = new RegExp(/(?:http[s]*\:\/\/)*(.*?)\.(?=[^\/]*\..{2,5})/i);
 
-    var subdomain = expression.exec(request.info.hostname);
+    let subdomain = expression.exec(request.info.hostname);
 
     if (subdomain) subdomain = subdomain[1];
 
     if (subdomain && !Hoek.contain(options.exclude, subdomain)) {
-
-      request.setUrl(options.destination + '/' + subdomain + request.url.path);
+      
+      const targetPath = options.destination + '/' + subdomain + request.url.path;
+      request.setUrl(targetPath);
 
     }
 
-    return reply.continue();
+    return h.continue
 
   })
 
-  next();
 }
 
-exports.register.attributes = {
-
-  pkg: require('./package.json')
-
-};
+module.exports = {
+  name: 'hapi-subdomain',
+  version: '1.0.0',
+  register,
+}
